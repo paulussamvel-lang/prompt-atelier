@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f6f2" />
+    <title>Prompt Atelier · 多模型提示词工坊</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-lockup">
+          <div class="brand-mark">P<span>·</span>A</div>
+          <div>
+            <div class="brand-name">Prompt Atelier</div>
+            <div class="brand-caption">多模型提示词工坊</div>
+          </div>
+        </div>
+
+        <nav class="primary-nav" aria-label="主导航">
+          <button class="nav-item active" data-view="workspace"><span class="nav-icon">✦</span><span>工作台</span><span class="nav-count">01</span></button>
+          <button class="nav-item" data-view="templates"><span class="nav-icon">▤</span><span>提示词模板</span></button>
+          <button class="nav-item" data-view="history"><span class="nav-icon">◷</span><span>历史记录</span><span class="nav-count" id="historyCount">0</span></button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="status-line"><span class="status-dot"></span><span>本地模式运行中</span></div>
+          <div class="version">ATELIER / 1.0.0</div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb"><span>工作台</span><span class="crumb-slash">/</span><strong id="topbarTitle">提示词翻译器</strong></div>
+          <div class="topbar-actions">
+            <button class="icon-button" id="clearAllButton" title="清空当前工作区" aria-label="清空当前工作区">⌫</button>
+            <div class="avatar" title="本地工作区">PA</div>
+          </div>
+        </header>
+
+        <section class="view active" id="workspaceView">
+          <div class="page-heading">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>LOCAL PROMPT ENGINE</div>
+              <h1>把画面说清楚，<br /><em>让模型听懂。</em></h1>
+              <p class="heading-copy" id="headingCopy">把 ComfyUI、自然语言或脑海里的画面丢进来，整理成结构清晰、可直接使用的提示词。</p>
+            </div>
+            <div class="heading-meta">
+              <span class="meta-label">当前引擎</span>
+              <strong>Atelier Translate <span class="live-dot"></span></strong>
+              <span>无需联网 · 结果仅存于本机</span>
+            </div>
+          </div>
+
+          <div class="workspace-grid">
+            <section class="panel source-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">01 / INPUT</span>
+                  <h2>原始画面</h2>
+                </div>
+                <button class="text-button" id="exampleButton"><span>✦</span>载入示例</button>
+              </div>
+              <div class="textarea-wrap source-wrap">
+                <textarea id="sourceInput" spellcheck="false" placeholder="粘贴 ComfyUI 解析结果，或直接描述你想要的画面……">一位穿着白色衬衫的年轻女性，坐在窗边阅读，午后的阳光从百叶窗洒进来，安静的室内，胶片摄影，温柔的暖色调，细腻的皮肤质感</textarea>
+                <div class="textarea-footer"><span id="sourceChars">0 字符</span><span class="keyboard-hint">⌘ ↵ 翻译</span></div>
+              </div>
+
+              <div class="control-section">
+                <div class="control-label"><span>目标模型</span><span class="help-mark" title="提示词会按模型偏好调整">?</span></div>
+                <div class="select-control"><span class="model-badge" id="modelBadge">S</span><select id="modelSelect"><option value="sdxl">SDXL 1.0 · Base</option><option value="turbo">SDXL Turbo</option><option value="pony">Pony Diffusion XL</option><option value="krea2">Krea 2 · Image</option><option value="minimaxh3">MiniMax H3 · Video</option></select><span class="select-arrow">⌄</span></div>
+              </div>
+
+              <div class="control-section style-section">
+                <div class="control-label"><span>风格偏好</span><span class="control-note">可多选</span></div>
+                <div class="chip-list" id="styleChips">
+                  <button class="choice-chip selected" data-style="cinematic">电影感</button>
+                  <button class="choice-chip" data-style="editorial">时尚杂志</button>
+                  <button class="choice-chip" data-style="anime">二次元</button>
+                  <button class="choice-chip" data-style="analog">模拟胶片</button>
+                  <button class="choice-chip" data-style="minimal">极简</button>
+                </div>
+              </div>
+
+              <div class="control-section detail-section">
+                <div class="control-label"><span>输出密度</span><span class="control-note">默认保留全部细节</span></div>
+                <div class="chip-list" id="detailModes">
+                  <button class="choice-chip selected" data-detail-mode="complete">完整细节</button>
+                  <button class="choice-chip" data-detail-mode="compact">精炼标签</button>
+                </div>
+              </div>
+
+              <button class="translate-button" id="translateButton"><span>✦</span><span id="translateLabel">翻译为 SDXL 提示词</span><kbd>⌘ ↵</kbd></button>
+            </section>
+
+            <section class="panel analysis-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">02 / ANALYSIS</span>
+                  <h2>结构化解析</h2>
+                </div>
+                <span class="analysis-state"><span class="state-dot"></span><span id="analysisState">待翻译</span></span>
+              </div>
+              <div class="analysis-content" id="analysisContent">
+                <div class="analysis-intro">翻译后，画面中的关键元素会在这里自动归类。</div>
+                <div class="category-list" id="categoryList"></div>
+              </div>
+              <div class="analysis-bottom">
+                <div class="confidence-block"><span>解析置信度</span><strong id="confidenceValue">—</strong></div>
+                <div class="confidence-track"><span id="confidenceBar"></span></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="output-grid">
+            <section class="panel output-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">03 / OUTPUT</span>
+                  <h2>生成提示词 <span class="result-tag" id="resultTag">SDXL READY</span></h2>
+                </div>
+                <div class="panel-actions"><button class="icon-button small" id="copyPositive" title="复制正向提示词" aria-label="复制正向提示词">⧉</button><button class="icon-button small" id="downloadButton" title="下载提示词文本" aria-label="下载提示词文本">↓</button></div>
+              </div>
+              <div class="output-textarea-wrap"><textarea id="positiveOutput" spellcheck="false" placeholder="生成的提示词会出现在这里……"></textarea><div class="output-footer"><span id="retentionStats">模型格式 · 已整理</span><span id="positiveTokens">0 tokens</span></div></div>
+            </section>
+
+            <section class="panel negative-panel" id="negativePanel">
+              <div class="panel-header">
+                <div>
+                  <span class="panel-kicker">04 / PROTECTION</span>
+                  <h2>反向提示词</h2>
+                </div>
+                <button class="text-button" id="resetNegative">恢复默认</button>
+              </div>
+              <div class="output-textarea-wrap negative-wrap"><textarea id="negativeOutput" spellcheck="false" placeholder="negative prompt"></textarea><div class="output-footer"><span>通用质量保护词</span><span id="negativeTokens">0 tokens</span></div></div>
+            </section>
+
+            <aside class="panel settings-panel">
+              <div class="panel-header compact-header"><div><span class="panel-kicker">05 / SUGGESTION</span><h2>生成建议</h2></div><span class="sparkle">✦</span></div>
+              <div class="settings-list">
+                <label class="setting-row"><span>采样步数</span><span class="stepper"><button data-step="steps" data-dir="-1">−</button><input id="stepsInput" type="number" min="10" max="60" value="28" /><button data-step="steps" data-dir="1">+</button></span></label>
+                <label class="setting-row"><span>CFG Scale</span><span class="stepper"><button data-step="cfg" data-dir="-1">−</button><input id="cfgInput" type="number" min="1" max="15" step="0.5" value="6.5" /><button data-step="cfg" data-dir="1">+</button></span></label>
+                <label class="setting-row"><span>推荐尺寸</span><select id="sizeSelect"><option>1024 × 1024</option><option>1152 × 896</option><option>896 × 1152</option><option>1216 × 832</option></select></label>
+              </div>
+              <div class="tip-box"><span class="tip-icon">i</span><p id="tipText">SDXL 对具体的光线与材质词响应很好，建议把主体放在提示词最前面。</p></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="templatesView">
+          <div class="secondary-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span>CURATED STRUCTURES</div><h1>提示词模板</h1><p>从一个稳定的结构开始，再把你的画面填进去。</p></div><button class="translate-button compact" id="templateToWorkspace"><span>✦</span>使用空白工作台</button></div>
+          <div class="template-grid" id="templateGrid"></div>
+        </section>
+
+        <section class="view" id="historyView">
+          <div class="secondary-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span>LOCAL ARCHIVE</div><h1>历史记录</h1><p>最近生成的提示词保存在本机浏览器中。</p></div><button class="text-button danger" id="clearHistory">清空历史</button></div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><span id="toastText">已复制到剪贴板</span></div>
+    <script src="app.js"></script>
+  </body>
+</html>
