@@ -2,6 +2,7 @@
   "name": "prompt-atelier",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Offline prompt translator for SDXL, Krea 2 and MiniMax H3.",
   "scripts": {
     "dev": "node server.js",

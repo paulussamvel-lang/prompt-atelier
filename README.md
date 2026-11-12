@@ -1,5 +1,7 @@
 # Prompt Atelier · 提示词翻译工坊
 
+本项目采用 [MIT License](LICENSE) 开源，可免费使用、修改、分发及商用；再分发时须保留版权声明与许可证。
+
 把中文画面描述整理成适合 SDXL、Krea 2 和 MiniMax H3 的英文提示词。本地运行，无需 API Key，无第三方依赖。
 
 ## 支持的模型
